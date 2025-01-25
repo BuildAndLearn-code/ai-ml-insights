@@ -18,6 +18,6 @@ A simple web-based application to log and track troubleshooting activities. It h
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/troubleshooting-tracker.git
+   git clone https://github.com/mcai-pydev/ai-ml-insights/tree/troubleshooting-tracker/troubleshooting-tracker/
    cd troubleshooting-tracker
 
