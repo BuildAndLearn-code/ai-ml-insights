@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BidSmart — Auction Price Predictor</title>
+  <style>
+    :root {
+      --primary: #3e63dd;
+      --primary-dark: #2747b8;
+      --accent: #a2e665;
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --muted: #475569;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 10px;
+      --max-width: 1100px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Manrope", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    h1, h2, h3, h4 { margin: 0 0 12px; line-height: 1.2; }
+    h1 { font-size: clamp(32px, 4vw, 48px); font-weight: 700; }
+    h2 { font-size: clamp(28px, 3vw, 36px); font-weight: 700; }
+    h3 { font-size: 20px; font-weight: 700; }
+    p { margin: 0 0 12px; color: var(--muted); }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    header {
+      background: radial-gradient(circle at 20% 20%, rgba(62, 99, 221, 0.12), transparent 40%),
+                  radial-gradient(circle at 80% 0%, rgba(162, 230, 101, 0.12), transparent 35%),
+                  linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+      color: #f8fafc;
+      padding: 80px 0 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 60%);
+      pointer-events: none;
+    }
+
+    nav {
+      max-width: var(--max-width);
+      margin: 0 auto 32px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      display: grid;
+      place-items: center;
+      color: #0f172a;
+      font-weight: 800;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+    }
+    .ghost-btn {
+      border: 1px solid rgba(255,255,255,0.5);
+      color: #f8fafc;
+      padding: 10px 16px;
+      border-radius: 8px;
+      backdrop-filter: blur(6px);
+      transition: background 200ms ease, transform 200ms ease, border-color 200ms ease;
+    }
+    .ghost-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.8); transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 14px 36px rgba(39, 71, 184, 0.35); }
+    .btn-primary:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      color: #e2e8f0;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+    }
+
+    .hero-mock {
+      display: grid;
+      gap: 12px;
+    }
+    .mock-header { display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: rgba(162,230,101,0.2); color: #dff6c9; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.2px; }
+    .mock-metrics {
+      display: grid;
+      gap: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .meter {
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .meter span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #6ee7b7, var(--primary));
+      width: 68%;
+    }
+
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .hero-meta { color: #cbd5e1; font-size: 14px; }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+    .pill { padding: 6px 10px; background: rgba(255,255,255,0.08); border-radius: 999px; font-size: 12px; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); }
+
+    .trust-strip {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+    }
+    .trust-logos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      align-items: center;
+    }
+    .logo-tile {
+      padding: 12px;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 600;
+      background: #f8fafc;
+    }
+
+    section { margin: 72px 0 0; }
+    .section-heading { max-width: 720px; margin-bottom: 28px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .problem-visual {
+      background: linear-gradient(135deg, #fef2f2, #eff6ff);
+      border: 1px solid #fecdd3;
+      border-radius: var(--radius);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      color: #b91c1c;
+      font-weight: 700;
+    }
+
+    .step-grid, .feature-grid, .pricing-grid, .faq-list { display: grid; gap: 16px; }
+    .feature-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .step-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .pricing-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    .icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(62,99,221,0.08);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .highlight { color: var(--primary); font-weight: 700; }
+
+    .badge-accent {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: rgba(162,230,101,0.18);
+      color: #166534;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid rgba(162,230,101,0.6);
+    }
+
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+      position: relative;
+    }
+    .pricing-card.highlighted { border-color: var(--primary); box-shadow: 0 16px 42px rgba(62, 99, 221, 0.24); }
+    .price { font-size: 32px; font-weight: 800; color: var(--text); }
+    .feature-list { padding-left: 18px; margin: 0; color: var(--muted); }
+
+    .testimonial {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 10px;
+    }
+
+    .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+
+    .final-cta {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+      padding: 48px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    footer {
+      margin: 60px 0 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    ul { margin: 0; padding-left: 18px; }
+    li { margin-bottom: 8px; }
+
+    @media (max-width: 640px) {
+      nav { flex-direction: column; align-items: flex-start; }
+      header { padding: 64px 0 32px; }
+      .hero-card { padding: 16px; }
+      .final-cta { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav aria-label="Main">
+      <div class="logo" aria-label="BidSmart logo">
+        <div class="logo-mark">B</div>
+        <span>BidSmart</span>
+      </div>
+      <div class="nav-cta">
+        <a class="ghost-btn" href="#pricing">Pricing</a>
+        <a class="ghost-btn" href="#how-it-works">How it works</a>
+        <button class="btn-primary" aria-label="Get instant price prediction">Get instant price prediction</button>
+      </div>
+    </nav>
+    <div class="hero">
+      <div>
+        <div class="badge-accent">🔥 Know the real price before you bid</div>
+        <h1>Bid smarter with AI price predictions and bidding playbooks.</h1>
+        <p>BidSmart predicts final prices, shows comps, and tells you exactly when to bid so you never overpay—across eBay, Heritage Auctions, and LiveAuctioneers.</p>
+        <div class="hero-ctas">
+          <button class="btn-primary" aria-label="Get instant price prediction">Get instant price prediction</button>
+          <a class="ghost-btn" href="#how-it-works">See how it works</a>
+        </div>
+        <p class="hero-meta">Trusted by 5,000+ collectors and resellers • 92% accuracy • Average user saves $180 per item</p>
+        <div class="pill-row" aria-label="Supported marketplaces">
+          <span class="pill">eBay</span>
+          <span class="pill">Heritage Auctions</span>
+          <span class="pill">LiveAuctioneers</span>
+          <span class="pill">+ more</span>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="Product preview mock">
+        <div class="hero-mock">
+          <div class="mock-header">
+            <div>
+              <div style="font-weight:700; color:#f8fafc;">Vintage Omega Seamaster</div>
+              <small style="color:#cbd5e1;">Auto • Stainless • 1968</small>
+            </div>
+            <span class="badge">+18% margin</span>
+          </div>
+          <div class="mock-metrics">
+            <div style="display:flex; justify-content:space-between; align-items:center; color:#e2e8f0;">
+              <span>Predicted close</span>
+              <strong>$800 – $1,200</strong>
+            </div>
+            <div class="meter"><span></span></div>
+            <div style="display:flex; justify-content:space-between; color:#cbd5e1;">
+              <span>Bid up to</span><strong style="color:#e2e8f0;">$850</strong>
+            </div>
+            <div style="display:flex; gap:12px; color:#e2e8f0;">
+              <div style="flex:1; background:rgba(255,255,255,0.06); padding:10px; border-radius:10px;">
+                <div style="font-weight:700;">Comps</div>
+                <small>Heritage: $1,020<br>eBay: $940<br>LA: $1,080</small>
+              </div>
+              <div style="flex:1; background:rgba(255,255,255,0.06); padding:10px; border-radius:10px;">
+                <div style="font-weight:700;">Timing</div>
+                <small>Bid in final 30s<br>Walk away above $850</small>
+              </div>
+            </div>
+          </div>
+          <small style="color:#cbd5e1;">“Called the closing price within $30 and told me when to strike.” — Jenna R., Vintage watch reseller</small>
+        </div>
+      </div>
+    </div>
+    <div class="page">
+      <div class="trust-strip" aria-label="Trust indicators">
+        <div class="trust-logos">
+          <div class="logo-tile">eBay Power Seller</div>
+          <div class="logo-tile">Heritage Partner</div>
+          <div class="logo-tile">LiveAuctioneers</div>
+          <div class="logo-tile">Top 100 Reseller</div>
+        </div>
+        <p style="margin-top:12px; color:var(--muted);"><strong>92% price accuracy</strong> • $1.2M value optimized last quarter • <strong>Saved $180 avg per item</strong></p>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="problem">
+      <div class="section-heading">
+        <h2>Bidding blind is burning your money.</h2>
+        <p>Guessing what something is worth leads to overpaying, losing auctions, and thin margins. BidSmart gives you the data the pros already use.</p>
+      </div>
+      <div class="two-col">
+        <div>
+          <ul>
+            <li>Guessing item value and overpaying by hundreds.</li>
+            <li>Losing auctions because someone has better data.</li>
+            <li>Hidden fees and thin margins that kill profits.</li>
+            <li>Hours wasted hunting comps across platforms.</li>
+          </ul>
+        </div>
+        <div class="problem-visual" role="img" aria-label="Comparison of gut-feel bidder vs data-backed bidder">
+          <div>Gut-feel bidder → ❌ Wide price swing, overpays.</div>
+          <div>Data-backed bidder → ✅ Tight range, bids with confidence.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="solution">
+      <div class="section-heading">
+        <h2>Bid with data, not gut feelings.</h2>
+        <p>Upload a photo or paste a link. BidSmart predicts the final price, shows comps, and gives you a step-by-step bidding plan in seconds.</p>
+      </div>
+      <div class="two-col">
+        <div>
+          <ul>
+            <li>Know the true market range before you bid.</li>
+            <li>Avoid overpaying and protect your margins.</li>
+            <li>Win more auctions with precise timing alerts.</li>
+            <li>Track profits across platforms automatically (Pro).</li>
+          </ul>
+        </div>
+        <div class="card" aria-label="Product preview card">
+          <h3>Instant Preview</h3>
+          <p>Item → Predicted price band → Comparable sales → “Bid in final 30s up to $X”.</p>
+          <div class="meter"><span style="width:72%"></span></div>
+          <p style="margin-top:8px; color:var(--text);"><strong>Example:</strong> “This will likely sell for $800–$1,200. Bid up to $850 in the final 30 seconds.”</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <div class="section-heading">
+        <h2>Three steps to smarter wins.</h2>
+      </div>
+      <div class="step-grid">
+        <div class="card">
+          <div class="icon-circle">1</div>
+          <h3>Add an item</h3>
+          <p>Paste an auction link or drop a photo; AI reads title, condition, and category.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">2</div>
+          <h3>Get the prediction</h3>
+          <p>See price range, comps, and a timing plan with confidence scores.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">3</div>
+          <h3>Follow the plan</h3>
+          <p>Get alerts when to bid, how high to go, and when to walk away.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="section-heading">
+        <h2>Everything you need to win without overpaying.</h2>
+      </div>
+      <div class="feature-grid">
+        <div class="card">
+          <div class="icon-circle">🔮</div>
+          <h3>AI Price Predictions</h3>
+          <p>See likely closing ranges before you bid.</p>
+          <p>Uses thousands of past auctions, item condition, and seasonality to forecast final price.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">📊</div>
+          <h3>Comparable Sales Feed</h3>
+          <p>Instant comps from eBay, Heritage, LiveAuctioneers.</p>
+          <p>Side-by-side recent sales with grade/condition notes and fees included.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">⏱️</div>
+          <h3>Smart Bidding Playbooks</h3>
+          <p>Exact timing and max bid guidance.</p>
+          <p>Tells you when to enter, how much to offer, and red flags to avoid.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">🛡️</div>
+          <h3>Profit & Margin Tracker (Pro)</h3>
+          <p>Know if the deal is worth it.</p>
+          <p>Tracks buy costs, fees, shipping, and target resale price to show expected margin.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">🔔</div>
+          <h3>Alerts for Underpriced Finds (Pro)</h3>
+          <p>Never miss a steal.</p>
+          <p>Sends push/email alerts when listings sit below market comps.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">📑</div>
+          <h3>Inventory & Tax Reports (Pro)</h3>
+          <p>Stay organized at scale.</p>
+          <p>Auto-log wins, COGS, and export-ready tax summaries.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="social-proof">
+      <div class="section-heading">
+        <h2>Collectors and resellers are winning with BidSmart.</h2>
+      </div>
+      <div class="step-grid">
+        <div class="testimonial">
+          <p>“BidSmart pegged a vintage Omega within $25 and told me to strike in the last 20 seconds. Saved $210 on one purchase.”</p>
+          <strong>Chris M., Watch collector</strong>
+          <small>Photo: Warm portrait with watch display background.</small>
+        </div>
+        <div class="testimonial">
+          <p>“Our store wins 30% more auctions and margins are up 18%. The playbooks are gold.”</p>
+          <strong>Aisha K., Comic shop owner</strong>
+          <small>Photo: Headshot with comic wall backdrop.</small>
+        </div>
+        <div class="testimonial">
+          <p>“We flipped two estate pieces for +32% profit. Alerts catch deals before the crowd does.”</p>
+          <strong>Devin L., Estate reseller</strong>
+          <small>Photo: Studio headshot with soft lighting.</small>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <strong>$45K extra profit in 90 days</strong>
+        <p>for a top eBay power seller using BidSmart’s timing playbooks and underpriced alerts.</p>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="section-heading">
+        <h2>Simple plans for every bidder.</h2>
+        <p>Start with free predictions and upgrade when you’re ready to win more.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Free Lead Magnet</h3>
+          <div class="price">$0</div>
+          <ul class="feature-list">
+            <li>5 predictions/month</li>
+            <li>Basic comps</li>
+            <li>Single-platform (eBay) preview</li>
+          </ul>
+          <button class="btn-primary" aria-label="Try free predictions">Try free predictions</button>
+          <small>Best for new users testing accuracy.</small>
+        </div>
+        <div class="pricing-card highlighted">
+          <h3>Collector</h3>
+          <div class="price">$29/mo</div>
+          <ul class="feature-list">
+            <li>Unlimited predictions</li>
+            <li>Multi-platform (eBay + Heritage + LA)</li>
+            <li>Strategy playbooks & saved items</li>
+            <li>Basic alerts</li>
+          </ul>
+          <button class="btn-primary" aria-label="Start 7-day trial">Start 7-day trial</button>
+          <small>Best for casual collectors who buy monthly.</small>
+        </div>
+        <div class="pricing-card">
+          <h3>Pro Reseller</h3>
+          <div class="price">$99/mo</div>
+          <ul class="feature-list">
+            <li>Bulk analysis and priority support</li>
+            <li>Profit & tax reports; inventory tracking</li>
+            <li>Underpriced alerts</li>
+            <li>Team seats (2)</li>
+          </ul>
+          <button class="btn-primary" aria-label="Upgrade to Pro">Upgrade to Pro</button>
+          <small>Best for high-volume resellers and stores.</small>
+        </div>
+        <div class="pricing-card">
+          <h3>Enterprise / White-Label</h3>
+          <div class="price">Custom</div>
+          <ul class="feature-list">
+            <li>API access & white-label UI</li>
+            <li>Custom data feeds</li>
+            <li>Dedicated success manager</li>
+          </ul>
+          <button class="btn-primary" aria-label="Talk to sales">Talk to sales</button>
+          <small>Best for auction houses and marketplaces.</small>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="section-heading">
+        <h2>Answers before you bid.</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <strong>How accurate are the predictions?</strong>
+          <p>They average 92% accuracy and include confidence ranges so you see the spread.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Which platforms are supported?</strong>
+          <p>eBay at launch; Heritage, LiveAuctioneers, and more are rolling out. Pro includes multi-platform comps.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Can I cancel anytime?</strong>
+          <p>Yes, cancel in one click before renewal.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Do you add fees and shipping?</strong>
+          <p>Yes, we factor common fees and typical shipping costs into the range.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Will this help me win more auctions?</strong>
+          <p>Yes—alerts and timing playbooks improve win rates while keeping you within budget.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Is my data safe?</strong>
+          <p>We encrypt uploads and never sell your data; enterprise offers private deployments.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Can I use this for selling?</strong>
+          <p>Yes, sellers use BidSmart to set reserves and decide when to relist.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="final-cta">
+      <div class="final-cta">
+        <h2>Bid smarter on your next auction—starting today.</h2>
+        <p>Run your first prediction free. If we don’t help you save or win more, cancel anytime.</p>
+        <div class="hero-ctas" style="justify-content:center;">
+          <button class="btn-primary" aria-label="Get instant price prediction">Get instant price prediction</button>
+          <a class="ghost-btn" href="#pricing">See plans</a>
+        </div>
+        <p style="color:#cbd5e1;">7-day trial • Transparent accuracy ranges • Cancel anytime</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page">
+    <div>
+      <strong>BidSmart Labs</strong>
+      <p>support@bidsmart.ai • City, State</p>
+      <p>Bloomberg-style auction intelligence for collectors and resellers.</p>
+    </div>
+    <div>
+      <strong>Links</strong>
+      <ul>
+        <li>Product</li>
+        <li>Pricing</li>
+        <li>Blog</li>
+        <li>Help Center</li>
+        <li>Security</li>
+        <li>Terms • Privacy</li>
+      </ul>
+    </div>
+    <div>
+      <strong>Community</strong>
+      <ul>
+        <li>LinkedIn</li>
+        <li>YouTube (strategy tutorials)</li>
+        <li>Reddit community</li>
+        <li>Facebook group</li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
