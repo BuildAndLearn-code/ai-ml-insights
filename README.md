@@ -37,4 +37,15 @@ Make sure you have the following installed:
    ```bash
    git clone git@github.com:mcai-pydev/ai-ml-insights.git
    cd ai-ml-insights
+   ```
 
+### 🖥️ View the BidSmart landing page locally
+The BidSmart landing page lives in the `docs` directory as a static HTML file. To open it in your browser:
+
+1. Start a lightweight local server from the repo root:
+   ```bash
+   python -m http.server -d docs 8000
+   ```
+2. Visit `http://localhost:8000/bidsmart-landing-page.html` in your browser. You can also go to `http://localhost:8000/`, which redirects to the landing page and includes a manual link if the redirect is blocked.
+
+For a quick peek without running a server, open the file directly in your browser at `docs/bidsmart-landing-page.html`, though some browsers may block local assets without a server.
