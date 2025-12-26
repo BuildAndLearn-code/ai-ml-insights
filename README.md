@@ -42,10 +42,11 @@ Make sure you have the following installed:
 ### 🖥️ View the BidSmart landing page locally
 The BidSmart landing page lives in the `docs` directory as a static HTML file. To open it in your browser:
 
-1. Start a lightweight local server from the repo root:
+1. Start a lightweight local server from the repo root (the folder that contains this README):
    ```bash
-   python -m http.server 8000
+   python -m http.server -d docs 8000
    ```
 2. Visit `http://localhost:8000/` (or `http://127.0.0.1:8000/`) in your browser. Avoid `http://0.0.0.0:8000/` since that address is not reachable in a browser.
+3. If you see a 404, confirm you started the server from the repo root and that `docs/bidsmart-landing-page.html` exists.
 
 For a quick peek without running a server, open the file directly in your browser at `docs/bidsmart-landing-page.html`, though some browsers may block local assets without a server.
