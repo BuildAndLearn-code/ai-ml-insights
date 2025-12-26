@@ -150,6 +150,19 @@
       box-shadow: 0 16px 40px rgba(0,0,0,0.2);
     }
 
+    .hero-dashboard {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(15, 23, 42, 0.4);
+      padding: 12px;
+    }
+
+    .hero-dashboard svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
     .hero-mock {
       display: grid;
       gap: 12px;
@@ -315,6 +328,50 @@
       gap: 10px;
     }
 
+    .micro-demo {
+      background: #0f172a;
+      border-radius: 14px;
+      padding: 16px;
+      color: #e2e8f0;
+      border: 1px solid rgba(62, 99, 221, 0.3);
+      display: grid;
+      gap: 12px;
+    }
+
+    .micro-demo-frame {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.8);
+      opacity: 0;
+      transform: translateY(6px);
+      animation: demoFade 6s ease-in-out infinite;
+    }
+
+    .micro-demo-frame:nth-child(2) { animation-delay: 2s; }
+    .micro-demo-frame:nth-child(3) { animation-delay: 4s; }
+
+    .micro-demo-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.2);
+      overflow: hidden;
+    }
+
+    .micro-demo-bar span {
+      display: block;
+      height: 100%;
+      width: 70%;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+    }
+
+    @keyframes demoFade {
+      0%, 10% { opacity: 0; transform: translateY(6px); }
+      20%, 45% { opacity: 1; transform: translateY(0); }
+      60%, 100% { opacity: 0; transform: translateY(-6px); }
+    }
+
     .avatar-row {
       display: flex;
       align-items: center;
@@ -407,6 +464,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       .demo-step { animation: none; }
+      .micro-demo-frame { animation: none; opacity: 1; transform: none; }
     }
   </style>
 </head>
@@ -442,6 +500,29 @@
       </div>
       <div class="hero-card" aria-label="Product preview mock">
         <div class="hero-mock">
+          <div class="hero-dashboard" aria-hidden="true">
+            <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BidSmart dashboard preview">
+              <defs>
+                <linearGradient id="dashGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#3e63dd" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="#a2e665" stop-opacity="0.4"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="520" height="220" rx="16" fill="#0f172a"/>
+              <rect x="24" y="24" width="200" height="28" rx="8" fill="#1e293b"/>
+              <rect x="24" y="64" width="160" height="12" rx="6" fill="#334155"/>
+              <rect x="24" y="92" width="180" height="12" rx="6" fill="#334155"/>
+              <rect x="260" y="24" width="236" height="120" rx="12" fill="url(#dashGradient)"/>
+              <rect x="260" y="160" width="236" height="36" rx="10" fill="#1e293b"/>
+              <rect x="36" y="130" width="170" height="12" rx="6" fill="#475569"/>
+              <rect x="36" y="150" width="140" height="12" rx="6" fill="#475569"/>
+              <circle cx="302" cy="78" r="22" fill="#0f172a"/>
+              <circle cx="302" cy="78" r="10" fill="#a2e665"/>
+              <rect x="330" y="62" width="140" height="12" rx="6" fill="#0f172a" opacity="0.6"/>
+              <rect x="330" y="82" width="110" height="12" rx="6" fill="#0f172a" opacity="0.6"/>
+              <rect x="330" y="176" width="120" height="12" rx="6" fill="#334155"/>
+            </svg>
+          </div>
           <div class="mock-header">
             <div>
               <div style="font-weight:700; color:#f8fafc;">Vintage Omega Seamaster</div>
@@ -555,6 +636,24 @@
           <div class="icon-circle">3</div>
           <h3>Follow the plan</h3>
           <p>Get alerts when to bid, how high to go, and when to walk away.</p>
+        </div>
+        <div class="micro-demo" aria-label="Bidding workflow micro demo">
+          <strong>Live workflow preview</strong>
+          <div class="micro-demo-frame">
+            <span>Item detected: Vintage Omega Seamaster</span>
+            <div class="micro-demo-bar"><span style="width:64%"></span></div>
+            <small>Confidence: 92%</small>
+          </div>
+          <div class="micro-demo-frame">
+            <span>Predicted close: $800–$1,200</span>
+            <div class="micro-demo-bar"><span style="width:72%"></span></div>
+            <small>Comps refreshed 2 mins ago</small>
+          </div>
+          <div class="micro-demo-frame">
+            <span>Action: Bid up to $850 in final 30s</span>
+            <div class="micro-demo-bar"><span style="width:58%"></span></div>
+            <small>Alert scheduled</small>
+          </div>
         </div>
       </div>
     </section>
