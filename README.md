@@ -42,6 +42,13 @@ Make sure you have the following installed:
 ### 🖥️ View the BidSmart landing page locally
 The BidSmart landing page lives in the `docs` directory as a static HTML file. To open it in your browser:
 
+0. **Confirm you’re in the repo root** (the folder that contains this README):
+   ```bash
+   pwd
+   ls
+   ```
+   You should see `README.md` and the `docs/` folder listed.
+
 1. Start a lightweight local server from the repo root (the folder that contains this README):
    ```bash
    python -m http.server -d docs 8000
@@ -50,3 +57,11 @@ The BidSmart landing page lives in the `docs` directory as a static HTML file. T
 3. If you see a 404, confirm you started the server from the repo root and that `docs/bidsmart-landing-page.html` exists.
 
 For a quick peek without running a server, open the file directly in your browser at `docs/bidsmart-landing-page.html`, though some browsers may block local assets without a server.
+
+### 🧭 New to local servers? (quick troubleshooting)
+- If you get `File not found`, you likely started the server in the wrong folder. Run:
+  ```bash
+  cd /path/to/ai-ml-insights
+  python -m http.server -d docs 8000
+  ```
+- To stop the server, press `Ctrl + C` in the terminal.
