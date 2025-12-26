@@ -315,6 +315,40 @@
       gap: 10px;
     }
 
+    .avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(62, 99, 221, 0.25), rgba(162, 230, 101, 0.25));
+      border: 2px solid rgba(62, 99, 221, 0.2);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .press-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .press-badge {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     details.faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
     details.faq-item summary { list-style: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; }
     details.faq-item summary::-webkit-details-marker { display: none; }
@@ -368,6 +402,7 @@
       .final-cta { padding: 32px 24px; }
       body { padding-bottom: 96px; }
       .sticky-cta { display: flex; }
+      .press-badges { justify-content: center; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -575,23 +610,43 @@
       <div class="step-grid">
         <div class="testimonial">
           <p>“BidSmart pegged a vintage Omega within $25 and told me to strike in the last 20 seconds. Saved $210 on one purchase.”</p>
-          <strong>Chris M., Watch collector</strong>
-          <small>Photo: Warm portrait with watch display background.</small>
+          <div class="avatar-row">
+            <div class="avatar" aria-hidden="true">CM</div>
+            <div>
+              <strong>Chris M., Watch collector</strong>
+              <small>Warm portrait with watch display background.</small>
+            </div>
+          </div>
         </div>
         <div class="testimonial">
           <p>“Our store wins 30% more auctions and margins are up 18%. The playbooks are gold.”</p>
-          <strong>Aisha K., Comic shop owner</strong>
-          <small>Photo: Headshot with comic wall backdrop.</small>
+          <div class="avatar-row">
+            <div class="avatar" aria-hidden="true">AK</div>
+            <div>
+              <strong>Aisha K., Comic shop owner</strong>
+              <small>Headshot with comic wall backdrop.</small>
+            </div>
+          </div>
         </div>
         <div class="testimonial">
           <p>“We flipped two estate pieces for +32% profit. Alerts catch deals before the crowd does.”</p>
-          <strong>Devin L., Estate reseller</strong>
-          <small>Photo: Studio headshot with soft lighting.</small>
+          <div class="avatar-row">
+            <div class="avatar" aria-hidden="true">DL</div>
+            <div>
+              <strong>Devin L., Estate reseller</strong>
+              <small>Studio headshot with soft lighting.</small>
+            </div>
+          </div>
         </div>
       </div>
       <div class="card" style="margin-top:16px;">
         <strong>$45K extra profit in 90 days</strong>
         <p>for a top eBay power seller using BidSmart’s timing playbooks and underpriced alerts.</p>
+      </div>
+      <div class="press-badges" aria-label="Press mentions">
+        <div class="press-badge">Featured on FlipTalk Podcast</div>
+        <div class="press-badge">ProductHunt Trending</div>
+        <div class="press-badge">Reseller Weekly</div>
       </div>
     </section>
 
